@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ComponentType, useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import { useRouter } from "next/navigation";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -76,8 +77,13 @@ export default function RwandaDistrictMap({ onSelectDistrict }: { onSelectDistri
 
   const selectedRecords = records.filter((record) => record.district?.toLowerCase() === selectedDistrict.toLowerCase());
 
+  function signOut() {
+    localStorage.removeItem("nexrwanda_access_token");
+    router.push("/login");
+  }
+
   return (
-    <main className="min-h-screen bg-[#f7f9fc] text-[#12233f]">
+    <DashboardShell title="Rwanda Development Gap Map" subtitle="Data, insights, and development priorities" onSignOut={signOut}><main className="min-h-screen bg-[#f7f9fc] text-[#12233f]">
       <header className="border-b border-[#dfe5ee] bg-[#102542] text-white"><div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10"><Link href="/dashboard/innovations" className="text-sm font-bold uppercase tracking-[0.2em]">NexRwanda</Link><Link href="/dashboard/innovations" className="text-sm text-[#d9e4f3]">All innovations</Link></div></header>
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-10">
         <Link href="/dashboard/innovations" className="inline-flex items-center gap-2 text-sm font-semibold text-[#2563a6]"><ArrowLeft size={16} /> All innovations</Link>
@@ -88,6 +94,6 @@ export default function RwandaDistrictMap({ onSelectDistrict }: { onSelectDistri
           <aside className="border border-[#dfe5ee] bg-white p-6"><div className="flex items-center gap-2 text-[#2563a6]"><MapPin size={19} /><p className="font-bold">District details</p></div>{selectedDistrict ? <><h2 className="mt-5 text-2xl font-bold">{selectedDistrict}</h2>{selectedRecords.length ? <div className="mt-5 space-y-4">{selectedRecords.map((record, index) => <div className="border-t border-[#e8edf3] pt-4" key={`${record.indicator}-${record.year}-${index}`}><p className="font-semibold">{record.indicator}</p><p className="mt-1 text-2xl font-bold text-[#2563a6]">{record.value} <span className="text-sm font-normal text-[#64748b]">{record.unit}</span></p><p className="mt-1 text-xs text-[#64748b]">{record.year} · {record.verification_status}</p></div>)}</div> : <p className="mt-5 border-l-4 border-[#d78d4d] bg-[#fff8ef] p-4 text-sm leading-6 text-[#6b5b4a]">No verified district-level development measurements are connected for this district.</p>}</> : <p className="mt-5 text-sm leading-6 text-[#64748b]">Choose a district on the map to inspect its available records.</p>}</aside>
         </div>
       </div>
-    </main>
+    </main></DashboardShell>
   );
 }
